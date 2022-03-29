@@ -1,0 +1,35 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  buildConfiguration: "Release"
+  architecture: "win-x86"
+
+steps: 
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '5.0.x'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+
+- task: DotNetCoreCLI@2
+  displayName: "Publish App"
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    arguments: "-r $(architecture) --configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)"
+    zipAfterPublish: true
+
+- task: PublishBuildArtifacts@1
+  displayName: "Upload Main App build artifact"
+  inputs:
+    pathtoPublish: "$(Build.ArtifactStagingDirectory)"
+    artifactName: "swzz-backend"
